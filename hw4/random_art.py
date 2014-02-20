@@ -13,7 +13,7 @@ import Image
 from math import *
 
 def build_random_function(min_depth, max_depth):
-    # your doc string goes here
+    """Randomly chooses from a list of building block functions, which include: product, cos(pi), sin(pi), square, and cube."""
 
     xy = [["x"],["y"]] 
     if max_depth <= 1:
@@ -37,7 +37,7 @@ def build_random_function(min_depth, max_depth):
     return all_functions[randint(0,len(all_functions)-1)]    
 
 def evaluate_random_function(f, x, y):
-    # your doc string goes here       
+    """Evaluates a function with the given parameter values x and y."""    
 
     if f[0] == "x":
         return x
@@ -55,6 +55,7 @@ def evaluate_random_function(f, x, y):
         return evaluate_random_function(f[1],x,y) ** 3
         
 def generate_image():
+""" Generates an image using build_random_function and evaluate_random_function."""
     im = Image.new("RGB",(350,350))
     
     red_func = build_random_function(9,14)
@@ -82,6 +83,5 @@ def remap_interval(val, input_interval_start, input_interval_end, output_interva
         to the output interval [output_interval_start, output_interval_end].  The mapping
         is an affine one (i.e. output = input*c + b).
     
-        TODO: please fill out the rest of this docstring
     """    
     return output_interval_end - (input_interval_end - val)/(input_interval_end - input_interval_start) * (output_interval_end - output_interval_start)
