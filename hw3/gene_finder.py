@@ -26,17 +26,22 @@ def coding_strand_to_AA(dna):
         returns: a string containing the sequence of amino acids encoded by the
                  the input DNA fragment
     """
+
+    #Nice commenting.
+
     dna_seq = [] # creates an array of the amino acids coded in the DNA strand
     for i in range(len(dna)):       
-        if i % 3 == 0:
+        if i % 3 == 0: #This is clumsy - increment by 3 with a third argument to range "range(0,len(dna),3)"
+                       #The last argument is the equivalent of i+=3 in a Java for loop.
             dna_seq.append(dna[i:i+3])
             
     aa_sequence = ""
     for i in dna_seq: # for each amino acid coded in the sequence
         for j in codons: # for each group of codons that synthesis a certain protein
             for k in codons[codons.index(j)]: # for each codon in each group
+            # So, unless I'm mistaken, codons[codons.index(j)] is the same thing as j in this instance. Something to keep in mind.
                 if i == k:                              
-                    aa_sequence = aa_sequence + aa[codons.index(j)]
+                    aa_sequence = aa_sequence + aa[codons.index(j)] # += saves time and space
     return aa_sequence # amino acid sequence
     
 def coding_strand_to_AA_unit_tests():
@@ -55,9 +60,9 @@ def get_reverse_complement(dna):
         returns: the reverse complementary DNA sequence represented as a string
     """
     rev_comp = ""
-    for i in reversed(dna):
+    for i in reversed(dna): # Beautiful.
         if i == "T":
-            rev_comp += "A"
+            rev_comp += "A" # Likewise beautiful.
         elif i == "A":
             rev_comp += "T"
         elif i == "C":
@@ -88,7 +93,8 @@ def rest_of_ORF(dna):
     stop_codons = ["TAG", "TAA", "TGA"]    
     orf = ""
     
-    for i in range(len(dna_seq)):
+    for i in range(len(dna_seq)):   # Using "for i in dna_seq" would mean that later, dna_seq[i] gets truncated to i. 
+                                    # Same goes for stop_codons. It saves time and space in two places.
         for j in range(len(stop_codons)):
             if dna_seq[i] == stop_codons[j]:
                 return orf
@@ -114,9 +120,12 @@ def find_all_ORFs_oneframe(dna):
         dna: a DNA sequence
         returns: a list of non-nested ORFs
     """
+
+    #As you may be aware, this function is bugged.
+
     dna_seq = [] # creates an array of the amino acids coded in the DNA strand
     for i in range(len(dna)):       
-        if i % 3 == 0:
+        if i % 3 == 0:  
             dna_seq.append(dna[i:i+3])  
     orf_oneframe = []
     start_codon = "ATG"
@@ -124,16 +133,32 @@ def find_all_ORFs_oneframe(dna):
     i = 0
     while i < len(dna_seq):      
         if dna_seq[i] == start_codon:
-            for j in range(i,len(dna_seq)):
-                if dna_seq[j] == "TAG" or dna_seq[j] == "TAA" or dna_seq[j] == "TGA": # stop codons
-                    orf_oneframe.append(dna_seq[i:j])                
-                    i = j                    
-                    break
+            # for j in range(i,len(dna_seq)):
+            #     if dna_seq[j] == "TAG" or dna_seq[j] == "TAA" or dna_seq[j] == "TGA": # stop codons
+            #                                                                             #HERE IS YOUR BUG: you don't account for the case that you are at the end of your sequence.
+            #                                                                             # There should be some variety of append statement outside the for j loop
+            #                                                                              #Could be made more succinct with "if dna_seq[j] in ['TAG','TAA', 'TGA']:""
+            #         orf_oneframe.append(dna_seq[i:j])   #Nice use of [:]. Its handy so keep it in mind for future projects             
+            #         i = j
+            #         break
+
+
+            # This little bit of code is the one thing that kept 4 of your 7 testable functions from being correct
+            # That makes me really sad. Please make sure your unit tests are robust enough to catch this in future, 
+            # and test/debug early and often. Talk to me or the other ninjas if you get really hung up on a bug.
+            # Functionality is the largest part of your grade, and this is heavily impairing that.
+            j=i;
+            while j<len(dna_seq) and dna_seq[j] not in ["TAG","TAA","TGA"]:
+                j+=1;
+            orf_oneframe.append(dna_seq[i:j])
+            i=j
+            # END Nick's Code PS. There's probably a more succinct and prettier way to do this too.
+
         i+=1
         
     for x in range(len(orf_oneframe)):
         orf = ""
-        for y in range(len(orf_oneframe[x])):      
+        for y in range(len(orf_oneframe[x])): # Using ''.join() would render this for loop unecessary   
             orf += orf_oneframe[x][y]
         orf_oneframe[x] = orf
     return orf_oneframe
@@ -154,7 +179,7 @@ def find_all_ORFs_oneframe_unit_tests():
     print find_all_ORFs_oneframe("ATGGAC")
     
     print "input: ATGGCGTAGACGATGCGATAG, expected output: ['ATGGCG'],['ATGCGA'], actual output: "
-    print find_all_ORFs_oneframe("ATGGCGTAGACGATGCGATAG") # AHH
+    print find_all_ORFs_oneframe("ATGGCGTAGACGATGCGATAG") # AHH Indeed.
 
 def find_all_ORFs(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence in all 3
@@ -201,7 +226,7 @@ def find_all_ORFs_both_strands(dna):
     dna_first_strand = find_all_ORFs(dna)
     dna_reverse_complement = find_all_ORFs(get_reverse_complement(dna))
 
-    return dna_first_strand + dna_reverse_complement
+    return dna_first_strand + dna_reverse_complement #This is perfectly fine, but you can also one-line this just as easily
 
 def find_all_ORFs_both_strands_unit_tests():
     """ Unit tests for the find_all_ORFs_both_strands function """
@@ -225,7 +250,7 @@ def longest_ORF(dna):
     for i in range(len(dna_seq)):
         if len(dna_seq[i]) > len(longest_orf):
             longest_orf = dna_seq[i]
-    return longest_orf
+    return longest_orf      #This is fine, but for an exercise, try one-lining this with a list-comprehension and max().
 
 def longest_ORF_unit_tests():
     """ Unit tests for the longest_ORF function """
@@ -258,7 +283,12 @@ def longest_ORF_noncoding(dna, num_trials):
     for j in shuffles:  
         if len(j) > len(longest_orf):
             longest_orf = j
-    return longest_orf
+    return longest_orf          # Spoilers from my above comment - to one line this function you could use
+                                # return len(max([longest_ORF(shuffle(list(dna))) for i in range(num_trials)]))
+
+                                # Isn't that cool?! Admittedly, its getting a bit dense and you may not want to
+                                # one line it, but the point is that there are functions available that can save you
+                                # some for loops and the like here
     
 def gene_finder(dna, threshold):
     """ Returns the amino acid sequences coded by all genes that have an ORF
