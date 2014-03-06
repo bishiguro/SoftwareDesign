@@ -55,7 +55,7 @@ def evaluate_random_function(f, x, y):
         return evaluate_random_function(f[1],x,y) ** 3
         
 def generate_image():
-""" Generates an image using build_random_function and evaluate_random_function."""
+    """ Generates an image using build_random_function and evaluate_random_function."""
     im = Image.new("RGB",(350,350))
     
     red_func = build_random_function(9,14)
